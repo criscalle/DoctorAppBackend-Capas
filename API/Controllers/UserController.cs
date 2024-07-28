@@ -31,7 +31,6 @@ public class UserController : BaseApiController
     }
 
     [Authorize]  // para que solo usuarios autorizados puedan obtener datos
-
     [HttpGet("{id}")] // api/usuario/id
     public async Task<ActionResult<User>> GetUserById(int id)  // si no es asincrona se le quita el async y es task con el await y camia el FindAsinc a solo find
     {
@@ -41,7 +40,6 @@ public class UserController : BaseApiController
 
 
     [HttpPost("Registro")]  // POST: api/user/Registro
-
     public async Task<ActionResult<UserDto>> Registro(RegistroDto registroDto)
     {
         if (await UserExist(registroDto.UserName)) return BadRequest("El Usuario ya se encuentra registrado"); // utiliza la funcion UserExist para verificar si el usuario existe

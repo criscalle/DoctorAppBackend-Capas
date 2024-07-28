@@ -1,24 +1,20 @@
 using API.Extenciones;
-using Data;
-using Data.Interfaces;
-using Data.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using System.Text;
+using API.Middleware;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddServiceApplication(builder.Configuration); // inyecta ServiceApplicationExtension
-builder.Services.AddServiceIdentity(builder.Configuration); // inyecta ServiceIdentityExtension
+builder.Services.AddServiceApplication(builder.Configuration); // inyecta ServiceApplicationExtension en extenciones
+builder.Services.AddServiceIdentity(builder.Configuration); // inyecta ServiceIdentityExtension en extenciones
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionMiddleware>(); // se inyecta el ExceptionMiddleware que son errores del servidor
+app.UseStatusCodePagesWithReExecute("/errores/{0}");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

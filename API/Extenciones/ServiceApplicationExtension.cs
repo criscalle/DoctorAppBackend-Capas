@@ -3,6 +3,8 @@ using Data.Services;
 using Data;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+using API.Errores;
 
 namespace API.Extenciones;
 
@@ -47,6 +49,22 @@ public static class ServiceApplicationExtension
         services.AddCors(); // el cors se pone para que la api permita conexion desde otros programas (Angular) pero se termina de configurar abajo en app.usercors
 
         services.AddScoped<ITokenServices, TokenService>(); // se inyecta el token y se hace con AddScoped por que se necesita un servicio por solicitud (que se desechen una vez utilizados)
+
+        services.Configure<ApiBehaviorOptions>(options =>
+        {
+            options.InvalidModelStateResponseFactory = ActionContext =>
+            {
+                var errores = ActionContext.ModelState
+                .Where(e => e.Value.Errors.Count > 0)
+                .SelectMany(x => x.Value.Errors).Select(x => x.ErrorMessage).ToArray();
+
+                var errorResponse = new ApiValidationErrorResponse
+                {
+                    Errores = errores
+                };
+                return new BadRequestObjectResult(errorResponse);
+            };
+        });
 
         return services;  // este es un metodo de extension. todo lo de adentro estaba en el program inyectado con builder.Service pero se organiza con el metodo de extencion y se reemplaza el builder.Service por el service del parametro y el config tambien del parametro y se agrega asi: (builder.Services.AddServiceApplication(builder.Configuration))
     }
