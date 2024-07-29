@@ -47,7 +47,7 @@ public class UserController : BaseApiController
         using var hmac = new HMACSHA512();  // encriptar la contraseña
         var user = new User
         {
-            UserName = registroDto.UserName.ToLower(),
+            username = registroDto.UserName.ToLower(),
             PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registroDto.Password)),
             PasswordSalt = hmac.Key
         };
@@ -55,19 +55,19 @@ public class UserController : BaseApiController
         await _context.SaveChangesAsync();
         return new UserDto
         {
-          UserName = user.UserName,
-          Token = _token.CreateToken(user)
+          username = user.username,
+          token = _token.CreateToken(user)
         };
     }
 
     [HttpPost("Login")]  // POST: api/user/login
     public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
     {
-        var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == loginDto.UserName);
+        var user = await _context.Users.SingleOrDefaultAsync(x => x.username == loginDto.username);
         if (user == null) return Unauthorized("Usuario no valido");
 
         using var hmac = new HMACSHA512(user.PasswordSalt); 
-        var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
+        var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.password));
 
         for (var i = 0; i < computedHash.Length; i++)
         {
@@ -75,14 +75,14 @@ public class UserController : BaseApiController
         }
         return new UserDto 
         {
-            UserName = user.UserName,
-            Token = _token.CreateToken(user)
+            username = user.username,
+            token = _token.CreateToken(user)
         };
     }
 
     private async Task<bool> UserExist(string username)
     {
-        return await _context.Users.AnyAsync(x => x.UserName == username.ToLower()); // funcion que verifica si un usuario existe y devuelve un booleano
+        return await _context.Users.AnyAsync(x => x.username == username.ToLower()); // funcion que verifica si un usuario existe y devuelve un booleano
     }
 
    

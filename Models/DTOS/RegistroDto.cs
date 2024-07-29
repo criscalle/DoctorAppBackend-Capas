@@ -9,7 +9,7 @@ namespace Models.DTOS;
 
 public class RegistroDto
 {
-    [Required(ErrorMessage ="UserName es Requerido")] // validacion para que sea obligatorio el usuario
+    [Required(ErrorMessage ="Username es Requerido")] // validacion para que sea obligatorio el usuario
     public string UserName { get; set; }
 
     [Required(ErrorMessage = "Password es Requerido")] // validacion para que sea obligatoria la contraseña
