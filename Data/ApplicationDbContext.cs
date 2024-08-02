@@ -1,10 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Models.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
+
 
 namespace Data;
 
@@ -15,4 +12,13 @@ public class ApplicationDbContext : DbContext
     }
 
     public DbSet<User> Users {  get; set; }
+    public DbSet<Speciality> Specialities { get; set; }  // en la migracion a base de datos debe ser en plural (specialities / users)
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+    }
+
+
 }

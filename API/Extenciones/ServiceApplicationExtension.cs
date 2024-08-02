@@ -5,6 +5,11 @@ using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using API.Errores;
+using Data.Repository;
+using Data.Interfaces.IRepository;
+using Utilities;
+using BLL.Services.Interfaces;
+using BLL.Services;
 
 namespace API.Extenciones;
 
@@ -65,6 +70,9 @@ public static class ServiceApplicationExtension
                 return new BadRequestObjectResult(errorResponse);
             };
         });
+        services.AddScoped<IUnitWork, UnitWork>(); // aqui se inserta la unidad de trabajo y el servicio ya esta inyectado en el program
+        services.AddAutoMapper(typeof(MappingProfile)); // aqui se inserta el automapper pero se debe agregar referencia de proyecto
+        services.AddScoped<ISpecialityService, SpecialityService>();
 
         return services;  // este es un metodo de extension. todo lo de adentro estaba en el program inyectado con builder.Service pero se organiza con el metodo de extencion y se reemplaza el builder.Service por el service del parametro y el config tambien del parametro y se agrega asi: (builder.Services.AddServiceApplication(builder.Configuration))
     }
