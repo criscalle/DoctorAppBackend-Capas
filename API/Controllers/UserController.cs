@@ -26,7 +26,7 @@ public class UserController : BaseApiController
     public async Task<ActionResult<IEnumerable<User>>> GetUsers()  // el IEnumerable nos devuelve una lista de usuarios   es api/users
     {
         var users = await _context.Users.ToListAsync();
-        return Ok(users);  // el ok es para que nos devuelva un codigo de estado
+        return Ok(users); 
     }
 
     [Authorize]  // para que solo usuarios autorizados puedan obtener datos

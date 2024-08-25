@@ -13,6 +13,7 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<User> Users {  get; set; }
     public DbSet<Speciality> Specialities { get; set; }  // en la migracion a base de datos debe ser en plural (specialities / users)
+    public DbSet<Medico> Medicos { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

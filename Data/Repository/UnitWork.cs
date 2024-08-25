@@ -12,11 +12,13 @@ public class UnitWork : IUnitWork
     private readonly ApplicationDbContext _context;
 
     public ISpecialityRepository Speciality { get; private set; }
+    public IMedicoRepository Medico { get; private set; }
 
     public UnitWork(ApplicationDbContext context)
     {
         _context = context;
-        Speciality = new SpecialityRepository(_context);
+        Speciality = new SpecialityRepository(context);
+        Medico = new MedicoRepository(context);
     }
 
     public void Dispose()

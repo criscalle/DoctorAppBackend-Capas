@@ -5,14 +5,14 @@ using System.Net;
 
 namespace API.Controllers;
 
-public class SpecialityController : BaseApiController
+public class MedicoController : BaseApiController
 {
-    private readonly ISpecialityService _specialityService;
+    private readonly IMedicoService _medicoService;
     private ApiResponse _response;
 
-    public SpecialityController(ISpecialityService specialityService)
+    public MedicoController(IMedicoService medicoService)
     {
-        _specialityService = specialityService;
+        _medicoService = medicoService;
         _response = new();
     }
 
@@ -21,7 +21,7 @@ public class SpecialityController : BaseApiController
     {
         try
         {
-            _response.result = await _specialityService.GetAll();
+            _response.result = await _medicoService.GetAll();
             _response.isSuccess = true;
             _response.statusCode = HttpStatusCode.OK;
 
@@ -35,11 +35,11 @@ public class SpecialityController : BaseApiController
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(SpecialityDto modelDto)
+    public async Task<IActionResult> Create(MedicoDto modelDto)
     {
         try
         {
-            await _specialityService.Add(modelDto);
+            await _medicoService.Add(modelDto);
             _response.isSuccess = true;
             _response.statusCode = HttpStatusCode.Created;
 
@@ -54,11 +54,11 @@ public class SpecialityController : BaseApiController
     }
 
     [HttpPut]
-    public async Task<IActionResult> Update(SpecialityDto modelDto)
+    public async Task<IActionResult> Update(MedicoDto modelDto)
     {
         try
         {
-            await _specialityService.Update(modelDto);
+            await _medicoService.Update(modelDto);
             _response.isSuccess = true;
             _response.statusCode = HttpStatusCode.NoContent;
 
@@ -77,7 +77,7 @@ public class SpecialityController : BaseApiController
     {
         try
         {
-            await _specialityService.Remove(id);
+            await _medicoService.Remove(id);
             _response.isSuccess = true;
             _response.statusCode = HttpStatusCode.NoContent;
 

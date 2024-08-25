@@ -9,5 +9,6 @@ namespace Data.Interfaces.IRepository;
 public interface IUnitWork : IDisposable
 {
     ISpecialityRepository Speciality { get; }
+    IMedicoRepository Medico { get; }   
     Task Save();
 }

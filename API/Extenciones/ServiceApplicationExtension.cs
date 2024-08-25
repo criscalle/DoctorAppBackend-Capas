@@ -73,6 +73,7 @@ public static class ServiceApplicationExtension
         services.AddScoped<IUnitWork, UnitWork>(); // aqui se inserta la unidad de trabajo y el servicio ya esta inyectado en el program
         services.AddAutoMapper(typeof(MappingProfile)); // aqui se inserta el automapper pero se debe agregar referencia de proyecto
         services.AddScoped<ISpecialityService, SpecialityService>();
+        services.AddScoped<IMedicoService, MedicoService>();
 
         return services;  // este es un metodo de extension. todo lo de adentro estaba en el program inyectado con builder.Service pero se organiza con el metodo de extencion y se reemplaza el builder.Service por el service del parametro y el config tambien del parametro y se agrega asi: (builder.Services.AddServiceApplication(builder.Configuration))
     }
