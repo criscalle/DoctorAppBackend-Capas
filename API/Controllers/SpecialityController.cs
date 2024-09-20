@@ -34,6 +34,25 @@ public class SpecialityController : BaseApiController
         return Ok(_response);
     }
 
+    [HttpGet("ListadoActivos")]
+    public async Task<IActionResult> GetActivos()
+    {
+        try
+        {
+            _response.result = await _specialityService.GetActivos();
+            _response.isSuccess = true;
+            _response.statusCode = HttpStatusCode.OK;
+
+        }
+        catch (Exception ex)
+        {
+            _response.isSuccess = false;
+            _response.statusCode = HttpStatusCode.BadRequest;
+            _response.message = ex.Message;
+        }
+        return Ok(_response);
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create(SpecialityDto modelDto)
     {

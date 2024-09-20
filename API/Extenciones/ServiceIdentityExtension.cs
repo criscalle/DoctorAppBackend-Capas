@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using Models.Entities;
 using System.Text;
 
 namespace API.Extenciones;
@@ -8,6 +11,14 @@ public static class ServiceIdentityExtension
 {
     public static IServiceCollection AddServiceIdentity(this IServiceCollection services, IConfiguration config)
     {
+        services.AddIdentityCore<UserApplication>(opt =>
+        {
+            opt.Password.RequireNonAlphanumeric = false;
+        })
+           .AddRoles<RolApplication>()
+           .AddRoleManager<RoleManager<RolApplication>>()
+           .AddEntityFrameworkStores<ApplicationDbContext>();
+
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme) // buiilder.Services.AddAuthentication cuando estaba enn program
                 .AddJwtBearer(options =>
                 {

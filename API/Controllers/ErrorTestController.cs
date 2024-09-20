@@ -24,7 +24,7 @@ public class ErrorTestController : BaseApiController
     [HttpGet("not-found")]
     public ActionResult<User> GetNotFound()
     {
-        var obj = _context.Users.Find(-1);
+        var obj = _context.users.Find(-1);
 
         if (obj == null) return NotFound(new ApiErrorResponse(404));
         return obj;

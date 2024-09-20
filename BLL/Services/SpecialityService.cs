@@ -91,4 +91,18 @@ public class SpecialityService : ISpecialityService
             throw;
         }
     }
+
+    public async Task<IEnumerable<SpecialityDto>> GetActivos()
+    {
+        try
+        {
+            var list = await _unitWork.Speciality.GetAllAsync(x => x.state == true,
+                orderBy: e => e.OrderBy(e => e.namespeciality));
+            return _mapper.Map<IEnumerable<SpecialityDto>>(list);
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
 }

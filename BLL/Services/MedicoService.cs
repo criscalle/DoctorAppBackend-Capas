@@ -36,7 +36,7 @@ public class MedicoService : IMedicoService
             await _unitWork.Medico.Add(med);
             await _unitWork.Save();
             if (med.Id == 0)
-                throw new TaskCanceledException("La especialidad no se pudo crear");
+                throw new TaskCanceledException("La medico no se pudo crear");
             return _mapper.Map<MedicoDto>(med);
 
         }catch (Exception)

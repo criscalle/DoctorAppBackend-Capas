@@ -21,7 +21,7 @@ public class Medico
     [StringLength(100, MinimumLength = 1, ErrorMessage = "Direccion debe ser de Mínimo 1 Máximo 100 caracteres")]
     public string Direccion { get; set; }
 
-    [StringLength(40, MinimumLength = 1, ErrorMessage = "Telefono debe ser de Mínimo 1 Máximo 40 caracteres")]
+    [MaxLength(40)]
     public string Telefono { get; set; }
 
     [Required(ErrorMessage = "Genero es Requerido")]
