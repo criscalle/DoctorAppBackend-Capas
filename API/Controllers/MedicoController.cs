@@ -1,10 +1,12 @@
 ﻿using BLL.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTOS;
 using System.Net;
 
 namespace API.Controllers;
 
+[Authorize(Policy = "AdminAgendadorRol")]
 public class MedicoController : BaseApiController
 {
     private readonly IMedicoService _medicoService;

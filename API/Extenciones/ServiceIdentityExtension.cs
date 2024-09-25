@@ -19,7 +19,7 @@ public static class ServiceIdentityExtension
            .AddRoleManager<RoleManager<RolApplication>>()
            .AddEntityFrameworkStores<ApplicationDbContext>();
 
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme) // buiilder.Services.AddAuthentication cuando estaba enn program
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme) // builder.Services.AddAuthentication cuando estaba enn program
                 .AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
@@ -31,6 +31,13 @@ public static class ServiceIdentityExtension
                         ValidateAudience = false
                     };
                 });
+        services.AddAuthorization(opt =>  
+                {
+                    opt.AddPolicy("AdminRol", policy => policy.RequireRole("Admin"));
+                    opt.AddPolicy("AdminAgendadorRol", policy => policy.RequireRole("Admin", "Agendador"));
+                    opt.AddPolicy("AdminDoctorRol", policy => policy.RequireRole("Admin", "Doctor"));
+                });
+
         return services;
     }
 }

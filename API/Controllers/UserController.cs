@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models.DTOS;
 using Models.Entities;
+using System.Net;
 using System.Security.Cryptography;
 
 namespace API.Controllers;
@@ -14,15 +15,19 @@ public class UserController : BaseApiController
 {
     private readonly UserManager<UserApplication> _userManager;
     private readonly ITokenServices _token;
+    private ApiResponse _apiResponse;
+    private readonly RoleManager<RolApplication> _roleManager;
 
-    public UserController(UserManager<UserApplication> userManager, ITokenServices token)
+    public UserController(UserManager<UserApplication> userManager, ITokenServices token, RoleManager<RolApplication> roleManager)
     {
         _userManager = userManager;
         _token = token;
+        _apiResponse = new();
+        _roleManager = roleManager;
     }
 
-    [Authorize] // para que solo usuarios autorizados puedan obtener datos
-    [HttpGet]
+    //[Authorize] // para que solo usuarios autorizados puedan obtener datos
+    // [HttpGet]
     /* public async Task<ActionResult<IEnumerable<User>>> GetUsers()  // el IEnumerable nos devuelve una lista de usuarios   es api/users
     {
         var users = await _context.users.ToListAsync();
@@ -37,29 +42,30 @@ public class UserController : BaseApiController
         return Ok(user);
     } */
 
-
+    [Authorize(Policy = "AdminRol")]
     [HttpPost("Registro")]  // POST: api/user/Registro
     public async Task<ActionResult<UserDto>> Registro(RegistroDto registroDto)
     {
         if (await UserExist(registroDto.UserName)) return BadRequest("El Usuario ya se encuentra registrado"); // utiliza la funcion UserExist para verificar si el usuario existe
 
-       // using var hmac = new HMACSHA512();  // encriptar la contraseña  // al usar AspNetCore.Identity ya no es necesario
         var user = new UserApplication
         {
             UserName = registroDto.UserName.ToLower(),
-           // PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registroDto.Password)),
-            // PasswordSalt = hmac.Key
+            Email = registroDto.Email,
+            Apellido = registroDto.Apellido,
+            Nombre = registroDto.Nombre,
         };
-        /*_context.users.Add(user);
-        await _context.SaveChangesAsync();*/
 
-        var result = await _userManager.CreateAsync(user, registroDto.Password);
-        if (!result.Succeeded) return BadRequest(result.Errors);
+        var Result = await _userManager.CreateAsync(user, registroDto.Password);
+        if (!Result.Succeeded) return BadRequest(Result.Errors);
+
+        var rolResult = await _userManager.AddToRoleAsync(user, registroDto.Rol);
+        if (rolResult.Succeeded) return BadRequest("Error al agregar el Rol del usuario");
 
         return new UserDto
         {
           username = user.UserName,
-          token = _token.CreateToken(user)
+          token = await _token.CreateToken(user)
         };
     }
 
@@ -72,23 +78,28 @@ public class UserController : BaseApiController
         var result = await _userManager.CheckPasswordAsync(user, loginDto.password);
 
         if (!result) return Unauthorized("Password no valido");
-        /* using var hmac = new HMACSHA512(user.PasswordSalt);
-         var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.password));
 
-         for (var i = 0; i < computedHash.Length; i++)
-         {
-             if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("Password no valido"); al usar el identity ya no es necesario
-         }  */
         return new UserDto 
         {
             username = user.UserName,
-            token = _token.CreateToken(user)
+            token = await _token.CreateToken(user)
         };
     }
 
+    [Authorize(Policy = "AdminRol")]
+    [HttpGet("ListadoRoles")]
+    public IActionResult GetRoles()
+    {
+        var roles = _roleManager.Roles.Select(r => new { NombreRol = r.Name }).ToList();
+        _apiResponse.result = roles;
+        _apiResponse.isSuccess = true;
+        _apiResponse.statusCode = HttpStatusCode.OK;
+
+        return Ok(_apiResponse);
+    }
     private async Task<bool> UserExist(string username)
     {
-        return await _userManager.Users.AnyAsync(x => x.UserName == username.ToLower()); // funcion que verifica si un usuario existe y devuelve un booleano / extencion IdentityUser
+        return await _userManager.Users.AnyAsync(x => x.UserName == username.ToLower()); // funcion que verifica si un usuario existe y devuelve un booleano / extension IdentityUser
     }
 
    
