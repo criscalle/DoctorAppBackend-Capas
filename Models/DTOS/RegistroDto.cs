@@ -13,7 +13,7 @@ public class RegistroDto
     public string UserName { get; set; }
 
     [Required(ErrorMessage = "Password es Requerido")] // validacion para que sea obligatoria la contraseña
-    [StringLength(8, MinimumLength =4, ErrorMessage ="El password debe ser Mínimo 4 máximo 10 caracteres")]
+    [StringLength(10, MinimumLength =4, ErrorMessage ="El password debe ser Mínimo 4 máximo 10 caracteres")]
     public string Password { get; set; }
 
     [Required(ErrorMessage = "Apellido es Requerido")] 

@@ -1,4 +1,5 @@
-﻿using Data;
+﻿using Azure;
+using Data;
 using Data.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -26,15 +27,25 @@ public class UserController : BaseApiController
         _roleManager = roleManager;
     }
 
-    //[Authorize] // para que solo usuarios autorizados puedan obtener datos
-    // [HttpGet]
-    /* public async Task<ActionResult<IEnumerable<User>>> GetUsers()  // el IEnumerable nos devuelve una lista de usuarios   es api/users
+    [Authorize(Policy = "AdminRol")]
+    [HttpGet]  // api/usuario
+    public async Task<ActionResult> GetUsuarios()
     {
-        var users = await _context.users.ToListAsync();
-        return Ok(users); 
+        var users = await _userManager.Users.Select(u => new UserListDto()
+        {
+            username = u.UserName,
+            apellido = u.Apellido,
+            nombre = u.Nombre,
+            email = u.Email,
+            rol = string.Join(",", _userManager.GetRolesAsync(u).Result.ToArray())
+        }).ToListAsync();
+        _apiResponse.result = users;
+        _apiResponse.isSuccess = true;
+        _apiResponse.statusCode = HttpStatusCode.OK;
+        return Ok(_apiResponse);
     }
 
-    [Authorize]  // para que solo usuarios autorizados puedan obtener datos
+    /*[Authorize]  // para que solo usuarios autorizados puedan obtener datos
     [HttpGet("{id}")] // api/usuario/id
     public async Task<ActionResult<User>> GetUserById(int id)  // si no es asincrona se le quita el async y es task con el await y camia el FindAsinc a solo find
     {
@@ -60,7 +71,7 @@ public class UserController : BaseApiController
         if (!Result.Succeeded) return BadRequest(Result.Errors);
 
         var rolResult = await _userManager.AddToRoleAsync(user, registroDto.Rol);
-        if (rolResult.Succeeded) return BadRequest("Error al agregar el Rol del usuario");
+        if (!rolResult.Succeeded) return BadRequest("Error al agregar el Rol del usuario");
 
         return new UserDto
         {
