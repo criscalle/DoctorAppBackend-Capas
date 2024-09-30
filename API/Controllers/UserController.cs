@@ -113,5 +113,38 @@ public class UserController : BaseApiController
         return await _userManager.Users.AnyAsync(x => x.UserName == username.ToLower()); // funcion que verifica si un usuario existe y devuelve un booleano / extension IdentityUser
     }
 
-   
+    [Authorize(Policy = "AdminRol")]
+    [HttpDelete("{username}")]  // DELETE: api/user/{username}
+    public async Task<IActionResult> DeleteUser(string username)
+    {
+        // Buscar el usuario por su nombre de usuario
+        var user = await _userManager.FindByNameAsync(username.ToLower());
+
+        // Verificar si el usuario existe
+        if (user == null)
+        {
+            _apiResponse.isSuccess = false;
+            _apiResponse.statusCode = HttpStatusCode.NotFound;
+            _apiResponse.result = new List<string> { "Usuario no encontrado" };
+            return NotFound(_apiResponse);
+        }
+
+        // Eliminar el usuario
+        var result = await _userManager.DeleteAsync(user);
+
+        // Verificar si la eliminación fue exitosa
+        if (!result.Succeeded)
+        {
+            _apiResponse.isSuccess = false;
+            _apiResponse.statusCode = HttpStatusCode.BadRequest;
+            _apiResponse.result = result.Errors.Select(e => e.Description).ToList();
+            return BadRequest(_apiResponse);
+        }
+
+        _apiResponse.isSuccess = true;
+        _apiResponse.statusCode = HttpStatusCode.OK;
+        _apiResponse.result = "Usuario eliminado exitosamente";
+        return Ok(_apiResponse);
+    }
+
 }
